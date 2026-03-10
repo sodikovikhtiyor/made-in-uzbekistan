@@ -6,7 +6,7 @@ import {
   Menu, X, Search, LogOut, LayoutDashboard,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function Header() {
@@ -15,6 +15,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const t = useTranslations("nav");
+  const locale = useLocale();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -77,7 +78,7 @@ export function Header() {
                   </Link>
                 )}
                 <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={() => signOut({ callbackUrl: `/${locale}` })}
                   className="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
                 >
                   <LogOut className="h-4 w-4" />
@@ -156,7 +157,7 @@ export function Header() {
                   <MobileNavLink href="/admin" onClick={() => setMobileOpen(false)}>{t("adminPanel")}</MobileNavLink>
                 )}
                 <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={() => signOut({ callbackUrl: `/${locale}` })}
                   className="cursor-pointer rounded-md px-3 py-2.5 text-left text-sm text-slate-600 transition-colors hover:bg-slate-50"
                 >
                   {t("signOut")}
