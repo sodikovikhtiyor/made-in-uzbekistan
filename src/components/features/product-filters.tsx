@@ -1,8 +1,10 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface ProductFiltersProps {
   categories: { id: string; name: string; slug: string }[];
@@ -28,14 +30,11 @@ export function ProductFilters({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(currentQuery);
+  const t = useTranslations("products");
 
   function updateFilter(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
+    if (value) { params.set(key, value); } else { params.delete(key); }
     params.delete("page");
     router.push(`/products?${params.toString()}`);
   }
@@ -54,15 +53,12 @@ export function ProductFilters({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search products..."
+            placeholder={t("searchPlaceholder")}
             className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
-        <button
-          type="submit"
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"
-        >
-          Search
+        <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark">
+          {t("search")}
         </button>
       </form>
 
@@ -72,11 +68,9 @@ export function ProductFilters({
           onChange={(e) => updateFilter("category", e.target.value)}
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-primary focus:outline-none"
         >
-          <option value="">All Categories</option>
+          <option value="">{t("allCategories")}</option>
           {categories.map((cat) => (
-            <option key={cat.id} value={cat.slug}>
-              {cat.name}
-            </option>
+            <option key={cat.id} value={cat.slug}>{cat.name}</option>
           ))}
         </select>
 
@@ -85,11 +79,9 @@ export function ProductFilters({
           onChange={(e) => updateFilter("region", e.target.value)}
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-primary focus:outline-none"
         >
-          <option value="">All Regions</option>
+          <option value="">{t("allRegions")}</option>
           {regions.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
+            <option key={r} value={r}>{r}</option>
           ))}
         </select>
 
@@ -98,9 +90,9 @@ export function ProductFilters({
           onChange={(e) => updateFilter("sort", e.target.value)}
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-primary focus:outline-none"
         >
-          <option value="newest">Newest First</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
+          <option value="newest">{t("newestFirst")}</option>
+          <option value="price-asc">{t("priceLowHigh")}</option>
+          <option value="price-desc">{t("priceHighLow")}</option>
         </select>
       </div>
     </div>

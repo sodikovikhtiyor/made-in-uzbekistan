@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
+  const t = useTranslations("auth");
   const {
     register,
     handleSubmit,
@@ -41,11 +43,11 @@ export default function LoginPage() {
     <div className="flex min-h-[80vh] items-center justify-center bg-gradient-to-br from-primary-light to-white px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Sign in to your account</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("signInTitle")}</h1>
           <p className="mt-2 text-sm text-gray-500">
-            Don&apos;t have an account?{" "}
+            {t("noAccount")}{" "}
             <Link href="/register" className="text-primary hover:text-primary-dark">
-              Sign up
+              {t("signUp")}
             </Link>
           </p>
         </div>
@@ -60,8 +62,8 @@ export default function LoginPage() {
           <Input
             id="email"
             type="email"
-            label="Email"
-            placeholder="you@example.com"
+            label={t("emailLabel")}
+            placeholder={t("emailPlaceholder")}
             error={errors.email?.message}
             {...register("email")}
           />
@@ -69,14 +71,14 @@ export default function LoginPage() {
           <Input
             id="password"
             type="password"
-            label="Password"
-            placeholder="Enter your password"
+            label={t("passwordLabel")}
+            placeholder={t("passwordPlaceholder")}
             error={errors.password?.message}
             {...register("password")}
           />
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in..." : "Sign In"}
+            {isSubmitting ? t("signingIn") : t("signIn")}
           </Button>
         </form>
       </div>
