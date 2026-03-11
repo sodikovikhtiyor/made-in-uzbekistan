@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Stat {
   value: number;
   suffix: string;
-  label: string;
+  labelKey: string;
 }
 
 const stats: Stat[] = [
-  { value: 1200, suffix: "+", label: "Products Listed" },
-  { value: 350, suffix: "+", label: "Verified Manufacturers" },
-  { value: 45, suffix: "+", label: "Countries Served" },
-  { value: 98, suffix: "%", label: "Satisfaction Rate" },
+  { value: 1200, suffix: "+", labelKey: "productsListed" },
+  { value: 350, suffix: "+", labelKey: "verifiedManufacturers" },
+  { value: 45, suffix: "+", labelKey: "countriesServed" },
+  { value: 98, suffix: "%", labelKey: "satisfactionRate" },
 ];
 
 function AnimatedNumber({ value, suffix }: { value: number; suffix: string }) {
@@ -22,11 +23,7 @@ function AnimatedNumber({ value, suffix }: { value: number; suffix: string }) {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started) {
-          setStarted(true);
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting && !started) setStarted(true); },
       { threshold: 0.3 }
     );
     if (ref.current) observer.observe(ref.current);
@@ -41,36 +38,32 @@ function AnimatedNumber({ value, suffix }: { value: number; suffix: string }) {
     let current = 0;
     const timer = setInterval(() => {
       current += increment;
-      if (current >= value) {
-        setCount(value);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(current));
-      }
+      if (current >= value) { setCount(value); clearInterval(timer); }
+      else setCount(Math.floor(current));
     }, duration / steps);
     return () => clearInterval(timer);
   }, [started, value]);
 
   return (
     <span ref={ref} className="tabular-nums">
-      {count.toLocaleString()}
-      {suffix}
+      {count.toLocaleString()}{suffix}
     </span>
   );
 }
 
 export function StatsCounter() {
+  const t = useTranslations("stats");
   return (
     <section className="bg-primary py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
           {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
+            <div key={stat.labelKey} className="text-center">
               <p className="text-4xl font-bold text-white lg:text-5xl">
                 <AnimatedNumber value={stat.value} suffix={stat.suffix} />
               </p>
               <p className="mt-2 text-sm font-medium text-white/80">
-                {stat.label}
+                {t(stat.labelKey as Parameters<typeof t>[0])}
               </p>
             </div>
           ))}

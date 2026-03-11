@@ -8,10 +8,12 @@ import { quoteSchema, type QuoteInput } from "@/lib/validations/rfq";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export function QuoteForm({ rfqId }: { rfqId: string }) {
   const router = useRouter();
   const [error, setError] = useState("");
+  const t = useTranslations("rfq");
   const {
     register,
     handleSubmit,
@@ -31,7 +33,7 @@ export function QuoteForm({ rfqId }: { rfqId: string }) {
 
     if (!res.ok) {
       const body = await res.json();
-      setError(body.error || "Failed to submit quote");
+      setError(body.error || t("failedToSubmit"));
       return;
     }
 
@@ -41,9 +43,7 @@ export function QuoteForm({ rfqId }: { rfqId: string }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {error && (
-        <div className="rounded-md bg-danger-light p-3 text-sm text-danger">
-          {error}
-        </div>
+        <div className="rounded-md bg-danger-light p-3 text-sm text-danger">{error}</div>
       )}
 
       <input type="hidden" {...register("rfqId")} />
@@ -53,7 +53,7 @@ export function QuoteForm({ rfqId }: { rfqId: string }) {
           id="price"
           type="number"
           step="0.01"
-          label="Price (USD)"
+          label={t("priceLabel")}
           placeholder="0.00"
           error={errors.price?.message}
           {...register("price")}
@@ -61,7 +61,7 @@ export function QuoteForm({ rfqId }: { rfqId: string }) {
         <Input
           id="minOrder"
           type="number"
-          label="Min. Order Qty"
+          label={t("minOrderLabel")}
           placeholder="100"
           error={errors.minOrder?.message}
           {...register("minOrder")}
@@ -70,23 +70,23 @@ export function QuoteForm({ rfqId }: { rfqId: string }) {
 
       <Input
         id="leadTime"
-        label="Lead Time"
-        placeholder="2-3 weeks"
+        label={t("leadTimeLabel")}
+        placeholder={t("leadTimePlaceholder")}
         error={errors.leadTime?.message}
         {...register("leadTime")}
       />
 
       <Textarea
         id="notes"
-        label="Notes"
-        placeholder="Additional details about your quote..."
+        label={t("notesLabel")}
+        placeholder={t("notesPlaceholder")}
         rows={3}
         error={errors.notes?.message}
         {...register("notes")}
       />
 
       <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Quote"}
+        {isSubmitting ? t("submitting") : t("submitQuote")}
       </Button>
     </form>
   );
