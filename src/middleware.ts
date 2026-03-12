@@ -11,11 +11,11 @@ const authMiddleware = withAuth(
     const path = req.nextUrl.pathname;
 
     // Strip locale prefix for path matching (/en/admin -> /admin)
-    const pathWithoutLocale = path.replace(/^\/(en|ru)/, "");
+    const pathWithoutLocale = path.replace(/^\/(en|ru|uz)/, "");
 
     // Admin routes require ADMIN role
     if (pathWithoutLocale.startsWith("/admin") && token?.role !== "ADMIN") {
-      const locale = path.match(/^\/(en|ru)/)?.[1] ?? "en";
+      const locale = path.match(/^\/(en|ru|uz)/)?.[1] ?? "en";
       return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
     }
 
@@ -30,7 +30,7 @@ const authMiddleware = withAuth(
 
 // Paths that require authentication (with locale prefix)
 const authProtectedPattern =
-  /^\/(en|ru)\/(dashboard|company|products\/new|products\/edit|rfq\/new|admin)(\/.*)?$/;
+  /^\/(en|ru|uz)\/(dashboard|company|products\/new|products\/edit|rfq\/new|admin)(\/.*)?$/;
 
 export default function middleware(req: Parameters<typeof intlMiddleware>[0]) {
   const { pathname } = req.nextUrl;

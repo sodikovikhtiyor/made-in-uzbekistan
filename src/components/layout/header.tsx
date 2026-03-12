@@ -14,6 +14,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const t = useTranslations("nav");
   const locale = useLocale();
 
@@ -78,7 +79,7 @@ export function Header() {
                   </Link>
                 )}
                 <button
-                  onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                  onClick={() => setShowLogoutConfirm(true)}
                   className="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
                 >
                   <LogOut className="h-4 w-4" />
@@ -157,7 +158,7 @@ export function Header() {
                   <MobileNavLink href="/admin" onClick={() => setMobileOpen(false)}>{t("adminPanel")}</MobileNavLink>
                 )}
                 <button
-                  onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                  onClick={() => { setMobileOpen(false); setShowLogoutConfirm(true); }}
                   className="cursor-pointer rounded-md px-3 py-2.5 text-left text-sm text-slate-600 transition-colors hover:bg-slate-50"
                 >
                   {t("signOut")}
@@ -181,6 +182,30 @@ export function Header() {
 
       {/* Spacer for fixed header */}
       <div className="h-16" />
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-slate-900">{t("logoutConfirmTitle")}</h3>
+            <p className="mt-2 text-sm text-slate-500">{t("logoutConfirmMessage")}</p>
+            <div className="mt-6 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="cursor-pointer rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+              >
+                {t("cancel")}
+              </button>
+              <button
+                onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                className="cursor-pointer rounded-md bg-danger px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-danger-dark"
+              >
+                {t("signOut")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

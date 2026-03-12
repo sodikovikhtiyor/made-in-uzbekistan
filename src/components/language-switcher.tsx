@@ -40,6 +40,17 @@ export function LanguageSwitcher() {
       >
         RU
       </button>
+      <button
+        onClick={() => switchLocale("uz")}
+        disabled={isPending}
+        className={`cursor-pointer rounded px-2 py-1 transition-colors ${
+          locale === "uz"
+            ? "bg-primary text-white"
+            : "text-slate-500 hover:text-slate-900"
+        }`}
+      >
+        UZ
+      </button>
     </div>
   );
 }

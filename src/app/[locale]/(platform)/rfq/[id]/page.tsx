@@ -114,7 +114,7 @@ export default async function RFQDetailPage({
         {rfq.quotes.length === 0 ? (
           <p className="mt-4 text-sm text-gray-500">No quotes yet.</p>
         ) : (
-          <div className="mt-4 space-y-3">
+          <div className="mt-4 space-y-6">
             {rfq.quotes.map((quote) => (
               <Card key={quote.id}>
                 <CardContent className="flex items-center justify-between py-4">

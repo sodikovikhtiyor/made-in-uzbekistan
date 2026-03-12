@@ -97,9 +97,9 @@ export default async function RFQListPage() {
           )}
         </div>
       ) : (
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 flex flex-col gap-4">
           {rfqs.map((rfq) => (
-            <Link key={rfq.id} href={`/rfq/${rfq.id}`}>
+            <Link key={rfq.id} href={`/rfq/${rfq.id}`} className="block">
               <Card className="transition hover:shadow-md">
                 <CardContent className="flex items-center justify-between py-4">
                   <div>

@@ -12,7 +12,10 @@
     "getStarted": "Начать",
     "searchPlaceholder": "Поиск товаров, производителей...",
     "searchLabel": "Поиск",
-    "toggleMenu": "Открыть меню"
+    "toggleMenu": "Открыть меню",
+    "logoutConfirmTitle": "Выйти?",
+    "logoutConfirmMessage": "Вы уверены, что хотите выйти из аккаунта?",
+    "cancel": "Отмена"
   },
   "home": {
     "badge": "B2B-маркетплейс №1 в Узбекистане",
