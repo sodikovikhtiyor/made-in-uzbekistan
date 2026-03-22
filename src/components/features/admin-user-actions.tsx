@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export function AdminUserActions({
   userId,
@@ -11,6 +12,7 @@ export function AdminUserActions({
   verified: boolean;
 }) {
   const router = useRouter();
+  const t = useTranslations("admin");
 
   async function toggleVerify() {
     await fetch("/api/admin/users", {
@@ -27,7 +29,7 @@ export function AdminUserActions({
       size="sm"
       onClick={toggleVerify}
     >
-      {verified ? "Unverify" : "Verify"}
+      {verified ? t("unverify") : t("verify")}
     </Button>
   );
 }

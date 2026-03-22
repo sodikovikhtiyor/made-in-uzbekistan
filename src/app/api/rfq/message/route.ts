@@ -25,9 +25,20 @@ export async function POST(req: Request) {
       );
     }
 
-    const rfq = await db.rFQ.findUnique({ where: { id: parsed.data.rfqId } });
+    const rfq = await db.rFQ.findUnique({
+      where: { id: parsed.data.rfqId },
+      include: { quotes: { select: { company: { select: { userId: true } } } } },
+    });
     if (!rfq) {
       return NextResponse.json({ error: "RFQ not found" }, { status: 404 });
+    }
+
+    const isBuyer = rfq.buyerId === session.user.id;
+    const isQuotingManufacturer = rfq.quotes.some(
+      (q) => q.company.userId === session.user.id
+    );
+    if (!isBuyer && !isQuotingManufacturer) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const message = await db.message.create({
@@ -39,7 +50,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(message, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

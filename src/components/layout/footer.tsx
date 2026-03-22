@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 
 export function Footer() {
   const t = useTranslations("footer");
+  const tc = useTranslations("contact");
   return (
     <footer className="bg-slate-900 text-slate-300">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
@@ -58,7 +59,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-slate-400">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                Tashkent, Uzbekistan
+                {tc("location")}
               </li>
               <li className="flex items-center gap-2 text-sm text-slate-400">
                 <Mail className="h-4 w-4 shrink-0 text-primary" />

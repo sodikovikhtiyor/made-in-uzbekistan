@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { formatDate, formatPrice } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,8 @@ const statusVariant = {
 export default async function AdminRFQsPage() {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "ADMIN") redirect("/dashboard");
+
+  const t = await getTranslations("admin");
 
   const rfqs = await db.rFQ.findMany({
     orderBy: { createdAt: "desc" },
@@ -33,14 +36,14 @@ export default async function AdminRFQsPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">RFQ Management</h1>
-          <p className="text-sm text-gray-500">{rfqs.length} RFQs</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("rfqManagement")}</h1>
+          <p className="text-sm text-gray-500">{t("rfqCount", { count: rfqs.length })}</p>
         </div>
         <Link
           href="/admin"
           className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
-          Back to Admin
+          {t("backToAdmin")}
         </Link>
       </div>
 
@@ -48,16 +51,16 @@ export default async function AdminRFQsPage() {
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 font-medium text-gray-500">Title</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Buyer</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Product</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Company</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Budget</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Qty</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Quotes</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Status</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Date</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Details</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("title")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("buyer")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("product")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("company")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("budget")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("qty")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("quotes")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("status")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("date")}</th>
+              <th className="px-4 py-3 font-medium text-gray-500">{t("details")}</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -98,7 +101,7 @@ export default async function AdminRFQsPage() {
                     href={`/rfq/${rfq.id}`}
                     className="text-primary hover:underline"
                   >
-                    View
+                    {t("view")}
                   </Link>
                 </td>
               </tr>
@@ -106,7 +109,7 @@ export default async function AdminRFQsPage() {
             {rfqs.length === 0 && (
               <tr>
                 <td colSpan={10} className="px-4 py-8 text-center text-gray-400">
-                  No RFQs yet
+                  {t("noRfqs")}
                 </td>
               </tr>
             )}

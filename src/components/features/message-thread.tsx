@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Message {
   id: string;
@@ -30,29 +31,40 @@ export function MessageThread({
   const router = useRouter();
   const [content, setContent] = useState("");
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("messages");
 
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault();
     if (!content.trim()) return;
 
     setSending(true);
-    const res = await fetch("/api/rfq/message", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rfqId, content }),
-    });
+    setError(null);
+    try {
+      const res = await fetch("/api/rfq/message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rfqId, content }),
+      });
 
-    if (res.ok) {
-      setContent("");
-      router.refresh();
+      if (res.ok) {
+        setContent("");
+        router.refresh();
+      } else {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || t("failedToSend"));
+      }
+    } catch {
+      setError(t("networkError"));
+    } finally {
+      setSending(false);
     }
-    setSending(false);
   }
 
   return (
     <div className="mt-4">
       {messages.length === 0 ? (
-        <p className="text-sm text-gray-500">No messages yet.</p>
+        <p className="text-sm text-gray-500">{t("noMessages")}</p>
       ) : (
         <div className="space-y-3">
           {messages.map((msg) => (
@@ -81,16 +93,19 @@ export function MessageThread({
         </div>
       )}
 
+      {error && (
+        <p className="mt-2 text-sm text-red-600">{error}</p>
+      )}
       <form onSubmit={sendMessage} className="mt-4 flex gap-2">
         <input
           type="text"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Type a message..."
+          placeholder={t("placeholder")}
           className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <Button type="submit" disabled={sending || !content.trim()}>
-          {sending ? "Sending..." : "Send"}
+          {sending ? t("sending") : t("send")}
         </Button>
       </form>
     </div>

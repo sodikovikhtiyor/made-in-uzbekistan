@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export function AdminProductActions({
   productId,
@@ -11,6 +12,7 @@ export function AdminProductActions({
   active: boolean;
 }) {
   const router = useRouter();
+  const t = useTranslations("admin");
 
   async function toggleActive() {
     await fetch("/api/admin/products", {
@@ -27,7 +29,7 @@ export function AdminProductActions({
       size="sm"
       onClick={toggleActive}
     >
-      {active ? "Deactivate" : "Activate"}
+      {active ? t("deactivate") : t("activate")}
     </Button>
   );
 }

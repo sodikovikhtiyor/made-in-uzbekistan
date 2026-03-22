@@ -2,8 +2,10 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatPrice, formatDate } from "@/lib/utils";
+import { formatPrice, formatDate, getLocalized } from "@/lib/utils";
 import { CheckCircle, MapPin, Package, Calendar, ArrowLeft } from "lucide-react";
+import { getTranslations, getLocale } from "next-intl/server";
+import { categoryKeyMap, industryKeyMap, regionKeyMap } from "@/lib/i18n-maps";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +15,13 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const locale = await getLocale();
+  const t = await getTranslations("productDetail");
+  const tp = await getTranslations("products");
+  const tc = await getTranslations("categories");
+  const ti = await getTranslations("industries");
+  const tr = await getTranslations("regions");
+
   const product = await db.product.findUnique({
     where: { id, active: true },
     include: {
@@ -32,7 +41,7 @@ export default async function ProductDetailPage({
         className="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Products
+        {t("backToProducts")}
       </Link>
 
       <div className="grid gap-8 lg:grid-cols-3">
@@ -49,19 +58,27 @@ export default async function ProductDetailPage({
             </div>
           )}
 
-          <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {getLocalized(product.name, product.nameRu, product.nameUz, locale)}
+          </h1>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            {product.category && <Badge>{product.category.name}</Badge>}
-            {product.exportReady && <Badge variant="success">Export Ready</Badge>}
+            {product.category && (
+              <Badge>
+                {categoryKeyMap[product.category.name]
+                  ? tc(categoryKeyMap[product.category.name] as Parameters<typeof tc>[0])
+                  : product.category.name}
+              </Badge>
+            )}
+            {product.exportReady && <Badge variant="success">{tp("exportReady")}</Badge>}
             {product.hsCode && <Badge variant="default">HS: {product.hsCode}</Badge>}
           </div>
 
-          {product.description && (
+          {(product.description || product.descriptionRu || product.descriptionUz) && (
             <div className="mt-6">
-              <h2 className="text-lg font-semibold text-gray-900">Description</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("description")}</h2>
               <p className="mt-2 whitespace-pre-wrap text-gray-600">
-                {product.description}
+                {getLocalized(product.description ?? "", product.descriptionRu, product.descriptionUz, locale)}
               </p>
             </div>
           )}
@@ -69,7 +86,7 @@ export default async function ProductDetailPage({
           {/* Specs */}
           {specs && Object.keys(specs).length > 0 && (
             <div className="mt-6">
-              <h2 className="text-lg font-semibold text-gray-900">Specifications</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("specifications")}</h2>
               <dl className="mt-3 divide-y rounded-lg border">
                 {Object.entries(specs).map(([key, value]) => (
                   <div key={key} className="flex justify-between px-4 py-3">
@@ -99,31 +116,31 @@ export default async function ProductDetailPage({
             <div className="mt-4 space-y-2 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4" />
-                Min. order: {product.minOrder || "N/A"} {product.unit || "units"}
+                {t("minOrderInfo", { qty: product.minOrder || "N/A", unit: product.unit || "units" })}
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                Listed: {formatDate(product.createdAt)}
+                {t("listed", { date: formatDate(product.createdAt) })}
               </div>
             </div>
             <Link
               href={`/rfq/new?productId=${product.id}&companyId=${product.companyId}`}
               className="mt-6 block w-full rounded-md bg-primary px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-dark"
             >
-              Request Quote
+              {t("requestQuote")}
             </Link>
           </div>
 
           {/* Company Card */}
           <div className="rounded-lg border bg-white p-6">
-            <h3 className="text-sm font-semibold text-gray-900">Manufacturer</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t("manufacturer")}</h3>
             <Link
               href={`/company/${product.company.id}`}
               className="mt-3 block hover:underline"
             >
               <div className="flex items-center gap-2">
                 <span className="font-medium text-gray-900">
-                  {product.company.name}
+                  {getLocalized(product.company.name, product.company.nameRu, product.company.nameUz, locale)}
                 </span>
                 {product.company.verified && (
                   <CheckCircle className="h-4 w-4 text-primary" />
@@ -134,11 +151,17 @@ export default async function ProductDetailPage({
               <p className="mt-2 flex items-center gap-1 text-sm text-gray-500">
                 <MapPin className="h-4 w-4" />
                 {product.company.city ? `${product.company.city}, ` : ""}
-                {product.company.region}
+                {regionKeyMap[product.company.region]
+                  ? tr(regionKeyMap[product.company.region] as Parameters<typeof tr>[0])
+                  : product.company.region}
               </p>
             )}
             {product.company.industry && (
-              <Badge className="mt-2">{product.company.industry}</Badge>
+              <Badge className="mt-2">
+                {industryKeyMap[product.company.industry]
+                  ? ti(industryKeyMap[product.company.industry] as Parameters<typeof ti>[0])
+                  : product.company.industry}
+              </Badge>
             )}
           </div>
         </div>

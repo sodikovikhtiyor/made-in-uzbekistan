@@ -38,30 +38,39 @@ export async function POST(req: Request) {
       );
     }
 
-    const existingQuote = await db.quote.findFirst({
-      where: { rfqId: parsed.data.rfqId, companyId: company.id },
+    const quote = await db.$transaction(async (tx) => {
+      const existingQuote = await tx.quote.findFirst({
+        where: { rfqId: parsed.data.rfqId, companyId: company.id },
+      });
+      if (existingQuote) {
+        return null;
+      }
+
+      const newQuote = await tx.quote.create({
+        data: {
+          ...parsed.data,
+          companyId: company.id,
+        },
+      });
+
+      await tx.rFQ.update({
+        where: { id: parsed.data.rfqId },
+        data: { status: "QUOTED" },
+      });
+
+      return newQuote;
     });
-    if (existingQuote) {
+
+    if (!quote) {
       return NextResponse.json(
         { error: "You have already submitted a quote" },
         { status: 409 }
       );
     }
 
-    const quote = await db.quote.create({
-      data: {
-        ...parsed.data,
-        companyId: company.id,
-      },
-    });
-
-    await db.rFQ.update({
-      where: { id: parsed.data.rfqId },
-      data: { status: "QUOTED" },
-    });
-
     return NextResponse.json(quote, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

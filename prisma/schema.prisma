@@ -39,19 +39,24 @@ model User {
 }
 
 model Company {
-  id          String    @id @default(cuid())
-  userId      String    @unique
-  name        String
-  description String?   @db.Text
-  industry    String?
-  region      String?
-  city        String?
-  website     String?
-  logo        String?
-  documents   String[]
-  verified    Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  name          String
+  nameRu        String?
+  nameUz        String?
+  description   String?   @db.Text
+  descriptionRu String?   @db.Text
+  descriptionUz String?   @db.Text
+  industry      String?
+  region        String?
+  city          String?
+  website       String?
+  logo          String?
+  banner        String?
+  documents     String[]
+  verified      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   products    Product[]
@@ -75,11 +80,15 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  companyId   String
-  name        String
-  description String?  @db.Text
-  categoryId  String?
+  id            String   @id @default(cuid())
+  companyId     String
+  name          String
+  nameRu        String?
+  nameUz        String?
+  description   String?  @db.Text
+  descriptionRu String?  @db.Text
+  descriptionUz String?  @db.Text
+  categoryId    String?
   images      String[]
   minOrder    Int?
   unit        String?

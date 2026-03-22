@@ -38,7 +38,46 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(company, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("[POST /api/companies]", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "MANUFACTURER") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const existing = await db.company.findUnique({
+      where: { userId: session.user.id },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Company not found" }, { status: 404 });
+    }
+
+    const body = await req.json();
+    const parsed = companySchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0].message },
+        { status: 400 }
+      );
+    }
+
+    const company = await db.company.update({
+      where: { id: existing.id },
+      data: parsed.data,
+    });
+
+    return NextResponse.json(company);
+  } catch (err) {
+    console.error("[PATCH /api/companies]", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

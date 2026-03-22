@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 
 export function cn(...inputs: ClassValue[]) {
-  return inputs.filter(Boolean).join(" ");
+  return clsx(inputs);
 }
 
 export function formatPrice(price: number): string {
@@ -25,4 +25,15 @@ export function slugify(text: string): string {
     .replace(/[^\w\s-]/g, "")
     .replace(/[\s_]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+export function getLocalized(
+  en: string,
+  ru: string | null | undefined,
+  uz: string | null | undefined,
+  locale: string
+): string {
+  if (locale === "ru" && ru) return ru;
+  if (locale === "uz" && uz) return uz;
+  return en;
 }

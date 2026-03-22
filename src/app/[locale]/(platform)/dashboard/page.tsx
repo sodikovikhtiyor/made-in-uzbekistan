@@ -109,13 +109,21 @@ export default async function DashboardPage() {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">{t("quickActions")}</h2>
         <div className="flex flex-wrap gap-3">
           {isManufacturer && company && (
-            <Link
-              href="/products/new"
-              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {t("addProduct")}
-            </Link>
+            <>
+              <Link
+                href="/products/new"
+                className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {t("addProduct")}
+              </Link>
+              <Link
+                href="/company/edit"
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                {t("editCompany")}
+              </Link>
+            </>
           )}
           {!isManufacturer && (
             <Link

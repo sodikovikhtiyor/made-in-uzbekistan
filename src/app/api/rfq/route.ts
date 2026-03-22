@@ -7,7 +7,7 @@ import { rfqSchema } from "@/lib/validations/rfq";
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    if (!session || session.user.role !== "BUYER") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -31,7 +31,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(rfq, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

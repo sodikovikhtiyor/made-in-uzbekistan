@@ -3,10 +3,11 @@ import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getLocalized } from "@/lib/utils";
 import { Search, Package, CheckCircle } from "lucide-react";
 import { ProductFilters } from "@/components/features/product-filters";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { categoryKeyMap } from "@/lib/i18n-maps";
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +21,11 @@ export default async function ProductsPage({
   const category = params.category || "";
   const region = params.region || "";
   const sort = params.sort || "newest";
-  const page = parseInt(params.page || "1");
+  const page = parseInt(params.page || "1", 10);
   const limit = 12;
   const t = await getTranslations("products");
+  const tc = await getTranslations("categories");
+  const locale = await getLocale();
 
   const where: Record<string, unknown> = { active: true };
 
@@ -33,7 +36,7 @@ export default async function ProductsPage({
     ];
   }
   if (category) where.category = { slug: category };
-  if (region) where.company = { region };
+  if (region) where.company = { ...((where.company as object) || {}), region };
 
   const orderBy: Record<string, string> =
     sort === "price-asc"
@@ -46,7 +49,7 @@ export default async function ProductsPage({
     db.product.findMany({
       where,
       include: {
-        company: { select: { id: true, name: true, verified: true, region: true } },
+        company: { select: { id: true, name: true, nameRu: true, nameUz: true, verified: true, region: true } },
         category: { select: { id: true, name: true, slug: true } },
       },
       skip: (page - 1) * limit,
@@ -86,43 +89,52 @@ export default async function ProductsPage({
         </div>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((product) => (
-            <Link key={product.id} href={`/products/${product.id}`}>
-              <Card className="h-full transition hover:shadow-md">
-                {product.images.length > 0 && (
-                  <div className="aspect-video overflow-hidden rounded-t-lg bg-gray-100">
-                    <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
-                  </div>
-                )}
-                <CardContent className="py-4">
-                  <h3 className="font-medium text-gray-900 line-clamp-1">{product.name}</h3>
-                  <div className="mt-1 flex items-center gap-1 text-xs text-gray-500">
-                    <span>{product.company.name}</span>
-                    {product.company.verified && <CheckCircle className="h-3 w-3 text-primary" />}
-                  </div>
-                  {product.price && (
-                    <p className="mt-2 text-sm font-semibold text-primary">
-                      {formatPrice(product.price)}
-                      {product.unit && <span className="font-normal text-gray-400"> / {product.unit}</span>}
-                    </p>
+          {products.map((product) => {
+            const catKey = product.category?.name ? categoryKeyMap[product.category.name] : null;
+            return (
+              <Link key={product.id} href={`/products/${product.id}`}>
+                <Card className="h-full transition hover:shadow-md">
+                  {product.images.length > 0 && (
+                    <div className="aspect-video overflow-hidden rounded-t-lg bg-gray-100">
+                      <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
+                    </div>
                   )}
-                  {product.description && (
-                    <p className="mt-2 line-clamp-2 text-xs text-gray-500">{product.description}</p>
-                  )}
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {product.exportReady && <Badge variant="success">{t("exportReady")}</Badge>}
-                    {product.category && <Badge>{product.category.name}</Badge>}
-                  </div>
-                  <div className="mt-2 flex items-center gap-1 text-xs text-gray-400">
-                    <Package className="h-3 w-3" />
-                    {product.minOrder
-                      ? t("minOrder", { qty: product.minOrder, unit: product.unit || "units" })
-                      : t("noMinOrder")}
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                  <CardContent className="py-4">
+                    <h3 className="font-medium text-gray-900 line-clamp-1">
+                      {getLocalized(product.name, product.nameRu, product.nameUz, locale)}
+                    </h3>
+                    <div className="mt-1 flex items-center gap-1 text-xs text-gray-500">
+                      <span>{getLocalized(product.company.name, product.company.nameRu, product.company.nameUz, locale)}</span>
+                      {product.company.verified && <CheckCircle className="h-3 w-3 text-primary" />}
+                    </div>
+                    {product.price && (
+                      <p className="mt-2 text-sm font-semibold text-primary">
+                        {formatPrice(product.price)}
+                        {product.unit && <span className="font-normal text-gray-400"> / {product.unit}</span>}
+                      </p>
+                    )}
+                    {(product.description || product.descriptionRu || product.descriptionUz) && (
+                      <p className="mt-2 line-clamp-2 text-xs text-gray-500">
+                        {getLocalized(product.description ?? "", product.descriptionRu, product.descriptionUz, locale)}
+                      </p>
+                    )}
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {product.exportReady && <Badge variant="success">{t("exportReady")}</Badge>}
+                      {product.category && (
+                        <Badge>{catKey ? tc(catKey as Parameters<typeof tc>[0]) : product.category.name}</Badge>
+                      )}
+                    </div>
+                    <div className="mt-2 flex items-center gap-1 text-xs text-gray-400">
+                      <Package className="h-3 w-3" />
+                      {product.minOrder
+                        ? t("minOrder", { qty: product.minOrder, unit: product.unit || "units" })
+                        : t("noMinOrder")}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       )}
 

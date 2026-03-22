@@ -5,8 +5,9 @@ import { Link } from "@/i18n/navigation";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatDate, formatPrice } from "@/lib/utils";
+import { formatDate, formatPrice, getLocalized } from "@/lib/utils";
 import { Plus } from "lucide-react";
+import { getTranslations, getLocale } from "next-intl/server";
 
 const statusVariant = {
   OPEN: "success" as const,
@@ -21,6 +22,8 @@ export default async function RFQListPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/login");
 
+  const t = await getTranslations("rfqList");
+  const locale = await getLocale();
   const isBuyer = session.user.role === "BUYER";
   const isManufacturer = session.user.role === "MANUFACTURER";
 
@@ -29,8 +32,8 @@ export default async function RFQListPage() {
     rfqs = await db.rFQ.findMany({
       where: { buyerId: session.user.id },
       include: {
-        product: { select: { name: true } },
-        company: { select: { name: true } },
+        product: { select: { name: true, nameRu: true, nameUz: true } },
+        company: { select: { name: true, nameRu: true, nameUz: true } },
         _count: { select: { quotes: true, messages: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -46,7 +49,7 @@ export default async function RFQListPage() {
           },
           include: {
             buyer: { select: { name: true } },
-            product: { select: { name: true } },
+            product: { select: { name: true, nameRu: true, nameUz: true } },
             _count: { select: { quotes: true, messages: true } },
           },
           orderBy: { createdAt: "desc" },
@@ -56,8 +59,8 @@ export default async function RFQListPage() {
     rfqs = await db.rFQ.findMany({
       include: {
         buyer: { select: { name: true } },
-        product: { select: { name: true } },
-        company: { select: { name: true } },
+        product: { select: { name: true, nameRu: true, nameUz: true } },
+        company: { select: { name: true, nameRu: true, nameUz: true } },
         _count: { select: { quotes: true, messages: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -69,9 +72,9 @@ export default async function RFQListPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {isBuyer ? "My RFQs" : "Request for Quotes"}
+            {isBuyer ? t("myRfqs") : t("requestForQuotes")}
           </h1>
-          <p className="text-sm text-gray-500">{rfqs.length} requests</p>
+          <p className="text-sm text-gray-500">{t("requestCount", { count: rfqs.length })}</p>
         </div>
         {isBuyer && (
           <Link
@@ -79,20 +82,20 @@ export default async function RFQListPage() {
             className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"
           >
             <Plus className="mr-2 h-4 w-4" />
-            New RFQ
+            {t("newRfq")}
           </Link>
         )}
       </div>
 
       {rfqs.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="text-gray-500">No RFQs yet.</p>
+          <p className="text-gray-500">{t("noRfqs")}</p>
           {isBuyer && (
             <Link
               href="/rfq/new"
               className="mt-4 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm text-white hover:bg-primary-dark"
             >
-              Submit your first RFQ
+              {t("submitFirst")}
             </Link>
           )}
         </div>
@@ -105,19 +108,21 @@ export default async function RFQListPage() {
                   <div>
                     <h3 className="font-medium text-gray-900">{rfq.title}</h3>
                     <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-500">
-                      {rfq.product && <span>Product: {rfq.product.name}</span>}
+                      {rfq.product && <span>{t("productLabel", { name: getLocalized(rfq.product.name, rfq.product.nameRu, rfq.product.nameUz, locale) })}</span>}
                       {rfq.quantity && (
                         <span>
-                          Qty: {rfq.quantity} {rfq.unit || "units"}
+                          {t("qtyLabel", { qty: rfq.quantity, unit: rfq.unit || "units" })}
                         </span>
                       )}
-                      {rfq.budget && <span>Budget: {formatPrice(rfq.budget)}</span>}
+                      {rfq.budget && <span>{t("budgetLabel", { amount: formatPrice(rfq.budget) })}</span>}
                       <span>{formatDate(rfq.createdAt)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-400">
-                      {rfq._count.quotes} quote{rfq._count.quotes !== 1 ? "s" : ""}
+                      {rfq._count.quotes !== 1
+                        ? t("quoteCount", { count: rfq._count.quotes })
+                        : t("quoteCountSingular", { count: rfq._count.quotes })}
                     </span>
                     <Badge variant={statusVariant[rfq.status]}>{rfq.status}</Badge>
                   </div>

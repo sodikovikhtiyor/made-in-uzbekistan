@@ -38,7 +38,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -47,23 +48,31 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = 12;
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = 12;
 
-  const [products, total] = await Promise.all([
-    db.product.findMany({
-      where: { active: true },
-      include: {
-        company: { select: { id: true, name: true, verified: true, region: true } },
-        category: { select: { id: true, name: true, slug: true } },
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-      orderBy: { createdAt: "desc" },
-    }),
-    db.product.count({ where: { active: true } }),
-  ]);
+    const [products, total] = await Promise.all([
+      db.product.findMany({
+        where: { active: true },
+        include: {
+          company: { select: { id: true, name: true, verified: true, region: true } },
+          category: { select: { id: true, name: true, slug: true } },
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.product.count({ where: { active: true } }),
+    ]);
 
-  return NextResponse.json({ products, total, pages: Math.ceil(total / limit) });
+    return NextResponse.json({ products, total, pages: Math.ceil(total / limit) });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

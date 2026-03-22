@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { categoryKeyMap } from "@/lib/i18n-maps";
 
 interface ProductFiltersProps {
   categories: { id: string; name: string; slug: string }[];
@@ -14,11 +15,27 @@ interface ProductFiltersProps {
   currentSort: string;
 }
 
-const regions = [
-  "Tashkent", "Samarkand", "Bukhara", "Fergana", "Namangan",
-  "Andijan", "Kashkadarya", "Surkhandarya", "Khorezm", "Navoi",
-  "Jizzakh", "Syrdarya", "Karakalpakstan",
-];
+const regionKeys = [
+  "tashkent", "samarkand", "bukhara", "fergana", "namangan",
+  "andijan", "kashkadarya", "surkhandarya", "khorezm", "navoi",
+  "jizzakh", "syrdarya", "karakalpakstan",
+] as const;
+
+const regionValues: Record<string, string> = {
+  tashkent: "Tashkent",
+  samarkand: "Samarkand",
+  bukhara: "Bukhara",
+  fergana: "Fergana",
+  namangan: "Namangan",
+  andijan: "Andijan",
+  kashkadarya: "Kashkadarya",
+  surkhandarya: "Surkhandarya",
+  khorezm: "Khorezm",
+  navoi: "Navoi",
+  jizzakh: "Jizzakh",
+  syrdarya: "Syrdarya",
+  karakalpakstan: "Karakalpakstan",
+};
 
 export function ProductFilters({
   categories,
@@ -31,6 +48,8 @@ export function ProductFilters({
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(currentQuery);
   const t = useTranslations("products");
+  const tr = useTranslations("regions");
+  const tc = useTranslations("categories");
 
   function updateFilter(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -69,9 +88,14 @@ export function ProductFilters({
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-primary focus:outline-none"
         >
           <option value="">{t("allCategories")}</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.slug}>{cat.name}</option>
-          ))}
+          {categories.map((cat) => {
+            const catKey = categoryKeyMap[cat.name];
+            return (
+              <option key={cat.id} value={cat.slug}>
+                {catKey ? tc(catKey as Parameters<typeof tc>[0]) : cat.name}
+              </option>
+            );
+          })}
         </select>
 
         <select
@@ -80,8 +104,8 @@ export function ProductFilters({
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-primary focus:outline-none"
         >
           <option value="">{t("allRegions")}</option>
-          {regions.map((r) => (
-            <option key={r} value={r}>{r}</option>
+          {regionKeys.map((key) => (
+            <option key={key} value={regionValues[key]}>{tr(key)}</option>
           ))}
         </select>
 
