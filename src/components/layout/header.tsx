@@ -1,13 +1,16 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
-  Menu, X, Search, LogOut, LayoutDashboard,
+  Menu, X, Search, LogOut, LayoutDashboard, BarChart3,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { useSearchSuggestions } from "@/hooks/use-search-suggestions";
+import { SearchSuggestions } from "@/components/features/search-suggestions";
+import type { ProductSuggestion, CategorySuggestion } from "@/hooks/use-search-suggestions";
 
 export function Header() {
   const { data: session } = useSession();
@@ -17,6 +20,40 @@ export function Header() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const t = useTranslations("nav");
   const locale = useLocale();
+  const router = useRouter();
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  const {
+    query, setQuery, suggestions, isOpen, setIsOpen,
+    isLoading, activeIndex, clearSuggestions, handleKeyDown,
+  } = useSearchSuggestions();
+
+  const handleHeaderSearch = (searchQuery?: string) => {
+    const q = searchQuery || query;
+    if (q.trim()) {
+      clearSuggestions();
+      setSearchOpen(false);
+      router.push(`/products?q=${encodeURIComponent(q.trim())}`);
+    }
+  };
+
+  const handleSelectProduct = (product: ProductSuggestion) => {
+    clearSuggestions();
+    setSearchOpen(false);
+    router.push(`/products?q=${encodeURIComponent(product.name)}`);
+  };
+
+  const handleSelectCategory = (category: CategorySuggestion) => {
+    clearSuggestions();
+    setSearchOpen(false);
+    router.push(`/products?category=${encodeURIComponent(category.slug)}`);
+  };
+
+  const getActiveItem = (index: number) => {
+    const { categories, products } = suggestions;
+    if (index < categories.length) return { type: "category" as const, item: categories[index] };
+    return { type: "product" as const, item: products[index - categories.length] };
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -47,6 +84,12 @@ export function Header() {
             <NavLink href="/products">{t("products")}</NavLink>
             <NavLink href="/companies">{t("manufacturers")}</NavLink>
             <NavLink href="/rfq">{t("rfq")}</NavLink>
+            <NavLink href="/predictions">
+              <span className="flex items-center gap-1">
+                <BarChart3 className="h-3.5 w-3.5" />
+                {t("predictions")}
+              </span>
+            </NavLink>
             <NavLink href="/about">{t("about")}</NavLink>
           </nav>
 
@@ -119,14 +162,44 @@ export function Header() {
           <div className="border-t border-slate-100 bg-white px-4 py-3">
             <div className="mx-auto max-w-2xl">
               <div className="gradient-border">
-                <div className="gradient-border-inner flex items-center gap-2 px-4 py-2">
-                  <Search className="h-5 w-5 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder={t("searchPlaceholder")}
-                    className="w-full text-sm outline-none placeholder:text-slate-400"
-                    autoFocus
-                    onKeyDown={(e) => { if (e.key === "Escape") setSearchOpen(false); }}
+                <div ref={searchContainerRef} className="relative">
+                  <div className="gradient-border-inner flex items-center gap-2 px-4 py-2">
+                    <Search className="h-5 w-5 text-slate-400" />
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder={t("searchPlaceholder")}
+                      className="w-full text-sm outline-none placeholder:text-slate-400"
+                      autoFocus
+                      autoComplete="off"
+                      onKeyDown={(e) => {
+                        if (e.key === "Escape") {
+                          if (isOpen) { setIsOpen(false); return; }
+                          setSearchOpen(false);
+                          return;
+                        }
+                        if (e.key === "Enter" && activeIndex < 0) { handleHeaderSearch(); return; }
+                        handleKeyDown(e, (idx) => {
+                          const result = getActiveItem(idx);
+                          if (result.type === "category") handleSelectCategory(result.item as CategorySuggestion);
+                          else handleSelectProduct(result.item as ProductSuggestion);
+                        });
+                      }}
+                      onFocus={() => { if (suggestions.products.length > 0 || suggestions.categories.length > 0) setIsOpen(true); }}
+                    />
+                  </div>
+                  <SearchSuggestions
+                    suggestions={suggestions}
+                    isOpen={isOpen}
+                    isLoading={isLoading}
+                    activeIndex={activeIndex}
+                    query={query}
+                    locale={locale}
+                    onSelectProduct={handleSelectProduct}
+                    onSelectCategory={handleSelectCategory}
+                    onClose={() => setIsOpen(false)}
+                    containerRef={searchContainerRef}
                   />
                 </div>
               </div>
@@ -144,6 +217,7 @@ export function Header() {
             <MobileNavLink href="/products" onClick={() => setMobileOpen(false)}>{t("products")}</MobileNavLink>
             <MobileNavLink href="/companies" onClick={() => setMobileOpen(false)}>{t("manufacturers")}</MobileNavLink>
             <MobileNavLink href="/rfq" onClick={() => setMobileOpen(false)}>{t("rfq")}</MobileNavLink>
+            <MobileNavLink href="/predictions" onClick={() => setMobileOpen(false)}>{t("predictions")}</MobileNavLink>
             <MobileNavLink href="/about" onClick={() => setMobileOpen(false)}>{t("about")}</MobileNavLink>
 
             <div className="my-2 border-t border-slate-100" />
