@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { put } from "@vercel/blob";
+import { minioClient, BUCKET, MINIO_URL } from "@/lib/minio";
+import { randomUUID } from "crypto";
+import { extname } from "path";
+import sharp from "sharp";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_WIDTH = 4096;
+const MAX_HEIGHT = 4096;
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -28,6 +33,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "File must be smaller than 5MB" }, { status: 400 });
   }
 
-  const blob = await put(`${folder}/${file.name}`, file, { access: "public" });
-  return NextResponse.json({ url: blob.url });
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const meta = await sharp(buffer).metadata();
+  if ((meta.width ?? 0) > MAX_WIDTH || (meta.height ?? 0) > MAX_HEIGHT) {
+    return NextResponse.json(
+      { error: `Image resolution must not exceed ${MAX_WIDTH}×${MAX_HEIGHT}px` },
+      { status: 400 }
+    );
+  }
+
+  const ext = extname(file.name) || ".png";
+  const objectName = `${folder}/${randomUUID()}${ext}`;
+
+  await minioClient.putObject(BUCKET, objectName, buffer, buffer.length, {
+    "Content-Type": file.type,
+  });
+
+  const url = `${MINIO_URL}/${objectName}`;
+  return NextResponse.json({ url });
 }

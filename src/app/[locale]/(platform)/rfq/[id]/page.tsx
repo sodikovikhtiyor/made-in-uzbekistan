@@ -67,7 +67,7 @@ export default async function RFQDetailPage({
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{rfq.title}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500">
-            <span>{t("by", { name: rfq.buyer.name })}</span>
+            <span>{t("by", { name: rfq.buyer.name ?? "" })}</span>
             <span>{formatDate(rfq.createdAt)}</span>
             {rfq.product && <span>{t("productLabel", { name: getLocalized(rfq.product.name, rfq.product.nameRu, rfq.product.nameUz, locale) })}</span>}
           </div>
@@ -176,7 +176,7 @@ export default async function RFQDetailPage({
             createdAt: m.createdAt.toISOString(),
             sender: {
               id: m.sender.id,
-              name: m.sender.name,
+              name: m.sender.name ?? "",
               role: m.sender.role,
             },
           }))}

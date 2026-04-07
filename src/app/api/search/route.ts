@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { buildSearchOR } from "@/lib/search-utils";
 
 export async function GET(req: Request) {
   try {
@@ -14,15 +15,8 @@ export async function GET(req: Request) {
     const where: Record<string, unknown> = { active: true };
     const andConditions: Record<string, unknown>[] = [];
 
-    if (q) {
-      andConditions.push({
-        OR: [
-          { name: { contains: q, mode: "insensitive" } },
-          { description: { contains: q, mode: "insensitive" } },
-          { company: { name: { contains: q, mode: "insensitive" } } },
-        ],
-      });
-    }
+    const searchOR = buildSearchOR(q);
+    if (searchOR) andConditions.push({ OR: searchOR });
     if (category) {
       where.category = { slug: category };
     }

@@ -3,9 +3,11 @@ import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice, formatDate, getLocalized } from "@/lib/utils";
-import { CheckCircle, MapPin, Package, Calendar, ArrowLeft } from "lucide-react";
+import { CheckCircle, MapPin, Package, Calendar, ArrowLeft, Pencil } from "lucide-react";
 import { getTranslations, getLocale } from "next-intl/server";
 import { categoryKeyMap, industryKeyMap, regionKeyMap } from "@/lib/i18n-maps";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +23,7 @@ export default async function ProductDetailPage({
   const tc = await getTranslations("categories");
   const ti = await getTranslations("industries");
   const tr = await getTranslations("regions");
+  const session = await getServerSession(authOptions);
 
   const product = await db.product.findUnique({
     where: { id, active: true },
@@ -33,16 +36,30 @@ export default async function ProductDetailPage({
   if (!product) notFound();
 
   const specs = product.specs as Record<string, string> | null;
+  const isOwner =
+    session?.user.role === "MANUFACTURER" &&
+    product.company.userId === session.user.id;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link
-        href="/products"
-        className="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        {t("backToProducts")}
-      </Link>
+      <div className="mb-6 flex items-center justify-between">
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t("backToProducts")}
+        </Link>
+        {isOwner && (
+          <Link
+            href={`/products/${product.id}/edit`}
+            className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            Edit
+          </Link>
+        )}
+      </div>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Main Content */}

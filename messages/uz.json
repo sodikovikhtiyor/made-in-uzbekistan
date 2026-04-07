@@ -15,7 +15,8 @@
     "toggleMenu": "Menyuni ochish",
     "logoutConfirmTitle": "Chiqishni xohlaysizmi?",
     "logoutConfirmMessage": "Hisobingizdan chiqishni xohlayotganingizga ishonchingiz komilmi?",
-    "cancel": "Bekor qilish"
+    "cancel": "Bekor qilish",
+    "predictions": "Bozor prognozlari"
   },
   "home": {
     "badge": "O'zbekistonning №1 B2B bozori",
@@ -127,7 +128,10 @@
     "passwordMinLength": "Kamida 6 ta belgi",
     "createAccount": "Hisob yaratish",
     "creatingAccount": "Hisob yaratilmoqda...",
-    "registrationFailed": "Ro'yxatdan o'tish xatosi"
+    "registrationFailed": "Ro'yxatdan o'tish xatosi",
+    "continueWithGoogle": "Google orqali davom etish",
+    "continueWithFacebook": "Facebook orqali davom etish",
+    "orContinueWith": "yoki davom etish"
   },
   "dashboard": {
     "welcomeBack": "Xush kelibsiz, {name}",
@@ -403,6 +407,49 @@
     "submitButton": "So'rov yuborish",
     "failedToSubmit": "So'rovni yuborib bo'lmadi",
     "loading": "Yuklanmoqda..."
+  },
+  "predictions": {
+    "title": "Bozor prognozlari",
+    "subtitle": "O'zbek eksport bozorlari uchun AI simulyatsiyalari",
+    "newSimulation": "Yangi simulyatsiya",
+    "noSimulations": "Hali simulyatsiyalar yo'q",
+    "noSimulationsDesc": "Savdo tushunchalari olish uchun birinchi AI bozor simulyatsiyasini ishga tushiring.",
+    "createFirst": "Birinchi simulyatsiyani yaratish",
+    "backToPredictions": "Prognozlarga qaytish",
+    "newTitle": "Yangi bozor simulyatsiyasi",
+    "newSubtitle": "Stsenariy shablonini tanlang va simulyatsiya parametrlarini sozlang",
+    "selectTemplate": "Stsenariy shablonini tanlang",
+    "simulationTitle": "Simulyatsiya nomi",
+    "titlePlaceholder": "masalan, Q2 Tekstil eksport prognozi",
+    "customScenario": "Maxsus stsenariy tavsifi",
+    "customScenarioPlaceholder": "Shablon stsenariyini o'z tavsifingiz bilan almashtiring...",
+    "optional": "ixtiyoriy",
+    "simulationRounds": "Simulyatsiya turlari",
+    "runSimulation": "Simulyatsiyani ishga tushirish",
+    "creating": "Yaratilmoqda...",
+    "rounds": "{count} tur",
+    "summary": "Qisqacha xulosа",
+    "tradeForecast": "Savdo prognozi va tendensiyalar",
+    "agentInsights": "Agent kuzatishlari",
+    "timeline": "Voqealar vaqt jadvali",
+    "round": "Tur",
+    "exportVolume": "Eksport hajmi",
+    "priceTrend": "Narx tendensiyasi",
+    "demandIndex": "Talab indeksi",
+    "riskScore": "Xavf bahosi",
+    "topMarkets": "Yetakchi bozorlar",
+    "categoryTrends": "Kategoriya bo'yicha tendensiyalar",
+    "reportEmpty": "Hisobot ma'lumotlari hali qayta ishlanmoqda. Bir zum keyin sahifani yangilang.",
+    "noReport": "Bu simulyatsiya uchun hisobot mavjud emas.",
+    "pendingMessage": "Simulyatsiya navbatda va tez orada boshlanadi.",
+    "runningMessage": "Simulyatsiya ishlayapti. Bir necha soniyadan keyin sahifani yangilang.",
+    "failedMessage": "Simulyatsiya muvaffaqiyatsiz yakunlandi. Qayta urinib ko'ring.",
+    "status": {
+      "pending": "Kutilmoqda",
+      "running": "Ishlayapti",
+      "completed": "Yakunlandi",
+      "failed": "Xato"
+    }
   },
   "rfqDetail": {
     "by": "{name} tomonidan",

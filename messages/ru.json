@@ -15,7 +15,8 @@
     "toggleMenu": "Открыть меню",
     "logoutConfirmTitle": "Выйти?",
     "logoutConfirmMessage": "Вы уверены, что хотите выйти из аккаунта?",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "predictions": "Прогнозы рынка"
   },
   "home": {
     "badge": "B2B-маркетплейс №1 в Узбекистане",
@@ -127,7 +128,10 @@
     "passwordMinLength": "Не менее 6 символов",
     "createAccount": "Создать аккаунт",
     "creatingAccount": "Создание аккаунта...",
-    "registrationFailed": "Ошибка регистрации"
+    "registrationFailed": "Ошибка регистрации",
+    "continueWithGoogle": "Продолжить с Google",
+    "continueWithFacebook": "Продолжить с Facebook",
+    "orContinueWith": "или продолжить с"
   },
   "dashboard": {
     "welcomeBack": "С возвращением, {name}",
@@ -403,6 +407,49 @@
     "submitButton": "Отправить запрос",
     "failedToSubmit": "Не удалось отправить запрос",
     "loading": "Загрузка..."
+  },
+  "predictions": {
+    "title": "Прогнозы рынка",
+    "subtitle": "AI-симуляции торговли для узбекских экспортных рынков",
+    "newSimulation": "Новая симуляция",
+    "noSimulations": "Симуляций пока нет",
+    "noSimulationsDesc": "Запустите первую AI-симуляцию рынка для получения торговых прогнозов.",
+    "createFirst": "Создать первую симуляцию",
+    "backToPredictions": "Назад к прогнозам",
+    "newTitle": "Новая рыночная симуляция",
+    "newSubtitle": "Выберите шаблон сценария и настройте параметры симуляции",
+    "selectTemplate": "Выберите шаблон сценария",
+    "simulationTitle": "Название симуляции",
+    "titlePlaceholder": "например, Прогноз экспорта текстиля Q2",
+    "customScenario": "Описание пользовательского сценария",
+    "customScenarioPlaceholder": "Замените шаблонный сценарий своим описанием...",
+    "optional": "необязательно",
+    "simulationRounds": "Количество раундов",
+    "runSimulation": "Запустить симуляцию",
+    "creating": "Создание...",
+    "rounds": "{count} раундов",
+    "summary": "Краткое резюме",
+    "tradeForecast": "Торговый прогноз и тренды",
+    "agentInsights": "Наблюдения агентов",
+    "timeline": "Хронология событий",
+    "round": "Раунд",
+    "exportVolume": "Объём экспорта",
+    "priceTrend": "Ценовой тренд",
+    "demandIndex": "Индекс спроса",
+    "riskScore": "Оценка риска",
+    "topMarkets": "Ведущие рынки",
+    "categoryTrends": "Тренды по категориям",
+    "reportEmpty": "Данные отчёта ещё обрабатываются. Обновите страницу через момент.",
+    "noReport": "Отчёт для этой симуляции недоступен.",
+    "pendingMessage": "Симуляция в очереди и начнётся в ближайшее время.",
+    "runningMessage": "Симуляция выполняется. Обновите страницу через несколько секунд.",
+    "failedMessage": "Симуляция завершилась с ошибкой. Попробуйте снова.",
+    "status": {
+      "pending": "Ожидание",
+      "running": "Выполняется",
+      "completed": "Завершена",
+      "failed": "Ошибка"
+    }
   },
   "rfqDetail": {
     "by": "От {name}",

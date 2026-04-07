@@ -3,6 +3,20 @@
 import { useState, useRef } from "react";
 import { Upload, X, ImageIcon } from "lucide-react";
 
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_SIZE = 5 * 1024 * 1024;
+const MAX_WIDTH = 4096;
+const MAX_HEIGHT = 4096;
+
+async function validateFile(file: File): Promise<string | null> {
+  if (!ALLOWED_TYPES.includes(file.type)) return "Only JPG, PNG, WebP or GIF allowed";
+  if (file.size > MAX_SIZE) return "File must be smaller than 5 MB";
+  const bitmap = await createImageBitmap(file);
+  if (bitmap.width > MAX_WIDTH || bitmap.height > MAX_HEIGHT)
+    return `Max resolution is ${MAX_WIDTH}×${MAX_HEIGHT}px`;
+  return null;
+}
+
 interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
@@ -24,6 +38,11 @@ export function ImageUpload({
 
   async function handleFile(file: File) {
     setError("");
+    const validationError = await validateFile(file);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     setUploading(true);
     try {
       const formData = new FormData();
@@ -115,6 +134,11 @@ export function ImageUpload({
       />
 
       {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+      {!value && (
+        <p className="mt-1 text-xs text-gray-400">
+          JPG, PNG, WebP, GIF · Max 5 MB · Up to 4096×4096 px
+        </p>
+      )}
     </div>
   );
 }

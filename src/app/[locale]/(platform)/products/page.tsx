@@ -8,6 +8,7 @@ import { Search, Package, CheckCircle } from "lucide-react";
 import { ProductFilters } from "@/components/features/product-filters";
 import { getTranslations, getLocale } from "next-intl/server";
 import { categoryKeyMap } from "@/lib/i18n-maps";
+import { buildSearchOR } from "@/lib/search-utils";
 
 export const dynamic = "force-dynamic";
 
@@ -29,12 +30,8 @@ export default async function ProductsPage({
 
   const where: Record<string, unknown> = { active: true };
 
-  if (q) {
-    where.OR = [
-      { name: { contains: q, mode: "insensitive" } },
-      { description: { contains: q, mode: "insensitive" } },
-    ];
-  }
+  const searchOR = buildSearchOR(q);
+  if (searchOR) where.OR = searchOR;
   if (category) where.category = { slug: category };
   if (region) where.company = { ...((where.company as object) || {}), region };
 

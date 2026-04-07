@@ -81,7 +81,6 @@ export default function EditProductPage({
     }
 
     router.push(`/products/${id}`);
-    router.refresh();
   }
 
   if (loading) {

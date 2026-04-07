@@ -7,20 +7,21 @@ import { useTranslations } from "next-intl";
 
 interface Category {
   nameKey: string;
+  slug: string;
   count: string;
   icon: LucideIcon;
   color: string;
 }
 
 const categories: Category[] = [
-  { nameKey: "textiles", count: "500+", icon: Shirt, color: "text-primary bg-primary-light" },
-  { nameKey: "food", count: "350+", icon: Wheat, color: "text-accent bg-accent-light" },
-  { nameKey: "building", count: "200+", icon: Building2, color: "text-amber-600 bg-amber-50" },
-  { nameKey: "minerals", count: "150+", icon: Gem, color: "text-purple-600 bg-purple-50" },
-  { nameKey: "leather", count: "180+", icon: Footprints, color: "text-orange-600 bg-orange-50" },
-  { nameKey: "electronics", count: "100+", icon: Cpu, color: "text-indigo-600 bg-indigo-50" },
-  { nameKey: "chemicals", count: "80+", icon: FlaskConical, color: "text-rose-600 bg-rose-50" },
-  { nameKey: "handicrafts", count: "120+", icon: Palette, color: "text-teal-600 bg-teal-50" },
+  { nameKey: "textiles", slug: "textiles-apparel", count: "500+", icon: Shirt, color: "text-primary bg-primary-light" },
+  { nameKey: "food", slug: "food-agriculture", count: "350+", icon: Wheat, color: "text-accent bg-accent-light" },
+  { nameKey: "building", slug: "building-materials", count: "200+", icon: Building2, color: "text-amber-600 bg-amber-50" },
+  { nameKey: "minerals", slug: "minerals-metals", count: "150+", icon: Gem, color: "text-purple-600 bg-purple-50" },
+  { nameKey: "leather", slug: "leather-footwear", count: "180+", icon: Footprints, color: "text-orange-600 bg-orange-50" },
+  { nameKey: "electronics", slug: "electronics", count: "100+", icon: Cpu, color: "text-indigo-600 bg-indigo-50" },
+  { nameKey: "chemicals", slug: "chemicals", count: "80+", icon: FlaskConical, color: "text-rose-600 bg-rose-50" },
+  { nameKey: "handicrafts", slug: "handicrafts", count: "120+", icon: Palette, color: "text-teal-600 bg-teal-50" },
 ];
 
 export function CategoryGrid() {
@@ -38,7 +39,7 @@ export function CategoryGrid() {
             return (
               <Link
                 key={cat.nameKey}
-                href={`/products?category=${encodeURIComponent(name)}`}
+                href={`/products?category=${cat.slug}`}
                 className="group flex cursor-pointer flex-col items-center gap-3 rounded-xl border border-slate-100 bg-white p-6 text-center transition-all duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
               >
                 <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${cat.color} transition-transform duration-200 group-hover:scale-110`}>

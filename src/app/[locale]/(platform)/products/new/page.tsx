@@ -52,7 +52,6 @@ export default function NewProductPage() {
 
     const product = await res.json();
     router.push(`/products/${product.id}`);
-    router.refresh();
   }
 
   return (

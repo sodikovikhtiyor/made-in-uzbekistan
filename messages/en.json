@@ -15,7 +15,8 @@
     "toggleMenu": "Toggle menu",
     "logoutConfirmTitle": "Sign out?",
     "logoutConfirmMessage": "Are you sure you want to sign out of your account?",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "predictions": "Market Predictions"
   },
   "home": {
     "badge": "Uzbekistan's #1 B2B Marketplace",
@@ -127,7 +128,10 @@
     "passwordMinLength": "At least 6 characters",
     "createAccount": "Create Account",
     "creatingAccount": "Creating account...",
-    "registrationFailed": "Registration failed"
+    "registrationFailed": "Registration failed",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithFacebook": "Continue with Facebook",
+    "orContinueWith": "or continue with"
   },
   "dashboard": {
     "welcomeBack": "Welcome back, {name}",
@@ -403,6 +407,49 @@
     "submitButton": "Submit RFQ",
     "failedToSubmit": "Failed to submit RFQ",
     "loading": "Loading..."
+  },
+  "predictions": {
+    "title": "Market Predictions",
+    "subtitle": "AI-powered trade simulations for Uzbek export markets",
+    "newSimulation": "New Simulation",
+    "noSimulations": "No simulations yet",
+    "noSimulationsDesc": "Run your first AI market simulation to get trade insights.",
+    "createFirst": "Create First Simulation",
+    "backToPredictions": "Back to Predictions",
+    "newTitle": "New Market Simulation",
+    "newSubtitle": "Choose a scenario template and configure your simulation parameters",
+    "selectTemplate": "Select a scenario template",
+    "simulationTitle": "Simulation Title",
+    "titlePlaceholder": "e.g. Q2 Textile Export Forecast",
+    "customScenario": "Custom Scenario Description",
+    "customScenarioPlaceholder": "Override the template scenario with your own description...",
+    "optional": "optional",
+    "simulationRounds": "Simulation Rounds",
+    "runSimulation": "Run Simulation",
+    "creating": "Creating...",
+    "rounds": "{count} rounds",
+    "summary": "Executive Summary",
+    "tradeForecast": "Trade Forecast & Trends",
+    "agentInsights": "Agent Insights",
+    "timeline": "Event Timeline",
+    "round": "Round",
+    "exportVolume": "Export Volume",
+    "priceTrend": "Price Trend",
+    "demandIndex": "Demand Index",
+    "riskScore": "Risk Score",
+    "topMarkets": "Top Markets",
+    "categoryTrends": "Category Trends",
+    "reportEmpty": "Report data is still being processed. Refresh the page in a moment.",
+    "noReport": "Report not available for this simulation.",
+    "pendingMessage": "Simulation is queued and will start shortly.",
+    "runningMessage": "Simulation is running. This page will update automatically — refresh in a few seconds.",
+    "failedMessage": "Simulation failed to complete. Please try again.",
+    "status": {
+      "pending": "Pending",
+      "running": "Running",
+      "completed": "Completed",
+      "failed": "Failed"
+    }
   },
   "rfqDetail": {
     "by": "By {name}",
