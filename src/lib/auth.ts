@@ -9,8 +9,8 @@ import { db } from "./db";
 export const authOptions: NextAuthOptions = {
   adapter: {
     ...PrismaAdapter(db),
-    createUser: ({ image, ...data }: { image?: string | null; [key: string]: unknown }) =>
-      db.user.create({ data: { ...data, avatar: image ?? null } }),
+    createUser: ({ image, name, email, emailVerified }: { image?: string | null; name?: string | null; email: string; emailVerified?: Date | null }) =>
+      db.user.create({ data: { email, name, emailVerified, avatar: image ?? null } }),
     getUser: async (id: string) => {
       const user = await db.user.findUnique({ where: { id } });
       if (!user) return null;
