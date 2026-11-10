@@ -15,8 +15,13 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("metadata");
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata" });
   return {
     title: t("title"),
     description: t("description"),
